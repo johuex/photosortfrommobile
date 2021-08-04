@@ -1,9 +1,9 @@
 from PyQt5 import QtWidgets
-import MainApp  #ui-class
-
+from UI.mainapp import MainApp  #ui-class
+import sys
 
 
 app = QtWidgets.QApplication([])
 window = MainApp()
 window.show()
-app.exec_()
+sys.exit(app.exec_())
