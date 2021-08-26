@@ -68,13 +68,20 @@ class MainApp(Ui_MainWindow):
             count_files = len(os.listdir(self.folder_in)) # for progressbar
             i += 1
             self.progressBar.setValue(int(i//count_files)*100)
+            self.progressBar.repaint()
             '''THIS METHOD IS ONLY FOR SAMSUNG GALAXY S7'''
             self.label_7.setText(self.folder_in+"/"+filename)
             file_year = filename[:4]
             if file_year.isdigit() is not True:
+                if not os.path.exists(self.folder_out + "/not_sorted"):
+                    os.mkdir(self.folder_out + "/not_sorted")
+                shutil.copy2(self.folder_in + "/" + filename, self.folder_out + "/not_sorted")  # add filename
                 continue
             file_month = filename[4:6]
             if file_year.isdigit() is not True:
+                if not os.path.exists(self.folder_out + "/not_sorted"):
+                    os.mkdir(self.folder_out + "/not_sorted")
+                shutil.copy2(self.folder_in + "/" + filename, self.folder_out + "/not_sorted")  # add filename
                 continue
             else:
                 file_month = file_year + "_" + file_month
