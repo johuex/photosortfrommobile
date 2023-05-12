@@ -13,7 +13,7 @@ python3 main.py
 ## How it works
 * Choose input and output directory;
 * Read all filenames in input directory;
-* By template yyyymmdd_hhmmss.* read year and month of file;
+* Set mask for sorting by year and month of filename;
 * Copying this file to 'yyyy/yyyy_mm' folder in output directory;
 * If file's name doesn't match the pattern template, then copy it to 'not_sorted' folder in output directory;
 * Done!

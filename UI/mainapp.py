@@ -10,32 +10,26 @@ class Sorter(QObject):
     actual_file = Signal(str)
     completed = Signal(bool)
 
-    @Slot(str, str)
-    def sorting(self, input_folder: str, output_folder: str):
+    @Slot(str, str, str)
+    def sorting(self, input_folder: str, output_folder: str, mask: str):
         # Create target Directory if don't exist
         if not os.path.exists(output_folder):
             os.mkdir(output_folder)
-            print("Directory ", output_folder, " Created ")
-        else:
-            print("Directory ", output_folder, " already exists")
         i = 0
         # iterate files in folder
-        for filename in os.listdir(input_folder):  # TODO check what return (only files or with dirs)
+        for filename in os.listdir(input_folder):
             count_files = len(os.listdir(input_folder)) # for progressbar
             i += 1
             progress = int(i/count_files*100)
             self.progress.emit(progress)  # value for progressBar
-            
-            '''THIS METHOD IS ONLY FOR SAMSUNG GALAXY S7'''
-            # TODO work with dynamic mask
             self.actual_file.emit(input_folder+"/"+filename)
-            file_year = filename[:4]
+            file_year = filename[mask.find('Y'): mask.rfind('Y') + 1]
             if not file_year.isdigit():
                 if not os.path.exists(output_folder + "/not_sorted"):
                     os.mkdir(output_folder + "/not_sorted")
                 shutil.copy2(input_folder + "/" + filename, output_folder + "/not_sorted")  # add filename
                 continue
-            file_month = filename[4:6]
+            file_month = filename[mask.find('M'): mask.rfind('M') + 1]
             if not file_year.isdigit():
                 if not os.path.exists(output_folder + "/not_sorted"):
                     os.mkdir(output_folder + "/not_sorted")
@@ -47,21 +41,19 @@ class Sorter(QObject):
             # check year-folder
             if not os.path.exists(output_folder+"/"+file_year):
                 os.mkdir(output_folder+"/"+file_year)
-                print("Directory ", output_folder, " Created ")
             
             # check month-folder in year-folder
             if not os.path.exists(output_folder+"/"+file_year+"/"+file_month):
                 os.mkdir(output_folder+"/"+file_year+"/"+file_month)
-                print("Directory ", output_folder, " Created ")
             temp_out = output_folder+"/"+file_year+"/"+file_month
             shutil.copy2(input_folder+"/"+filename, temp_out)  # add filename
         
-        self.actual_file.emit("{i}/{count_files} sorted")
+        self.actual_file.emit(f"{i}/{count_files} sorted")
         self.completed.emit(True)
 
 
 class MainApp(Ui_MainWindow):
-    sort_requested = Signal(str, str)
+    sort_requested = Signal(str, str, str)
     
     def __init__(self):
         super().__init__()
@@ -115,11 +107,15 @@ class MainApp(Ui_MainWindow):
         if self.folder_out == "":
             self.label_4.setText("SET DIRECTORY!!!")
             return
+        mask = self.lineEdit.text()
+        if 'Y' not in mask and 'M' not in mask:
+            self.label_14.setText("MASK DON'T CONTAIN YEAR and/or MONTH!!!")
+            return
 
         self.pushButton.setEnabled(False)
         self.pushButton_2.setEnabled(False)
         self.pushButton_3.setEnabled(False)
-        self.sort_requested.emit(self.folder_in, self.folder_out)
+        self.sort_requested.emit(self.folder_in, self.folder_out, mask)
 
     def update_progress_bar(self, value: int):
         self.progressBar.setValue(value)
