@@ -1,4 +1,3 @@
-import threading
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtCore import QCoreApplication, QThread, QObject, pyqtSignal as Signal, pyqtSlot as Slot
 from UI.mainwindow import Ui_MainWindow
@@ -56,9 +55,9 @@ class Sorter(QObject):
                 print("Directory ", output_folder, " Created ")
             temp_out = output_folder+"/"+file_year+"/"+file_month
             shutil.copy2(input_folder+"/"+filename, temp_out)  # add filename
-            if i == count_files:
-                self.actual_file.emit("Done!")
-                self.completed.emit(True)
+        
+        self.actual_file.emit("{i}/{count_files} sorted")
+        self.completed.emit(True)
 
 
 class MainApp(Ui_MainWindow):
